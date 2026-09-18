@@ -1,16 +1,20 @@
 package in.simplifymoney.ledgersync.parse;
 
-import in.simplifymoney.ledgersync.model.RawMessage;
 import java.util.List;
 import java.util.Optional;
 
-/** Picks the parser for a message. Add yours here. */
+import in.simplifymoney.ledgersync.model.RawMessage;
+
 public final class Parsers {
 
     private final List<MessageParser> parsers;
 
     public Parsers() {
-        this(List.of(new HdfcSmsParser(), new IciciSmsParser()));
+        this(List.of(
+                new HdfcSmsParser(),
+                new IciciSmsParser(),
+                new EmailParser()
+        ));
     }
 
     public Parsers(List<MessageParser> parsers) {
@@ -19,8 +23,18 @@ public final class Parsers {
 
     public Optional<ParsedTxn> parse(RawMessage m) {
         for (MessageParser p : parsers) {
-            if (p.supports(m)) return p.parse(m);
+            if (p.supports(m)) {
+                return p.parse(m);
+            }
         }
+
         return Optional.empty();
     }
 }
+
+
+
+
+
+
+
